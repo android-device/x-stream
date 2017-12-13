@@ -21,7 +21,7 @@ CXXFLAGS += -Wfatal-errors
 EXTRA_INCLUDES=-include core/types.h
 EXTRA_INCLUDES+=-I/usr/local/include/boost-numeric-bindings
 #Make sure HADOOP_HOME is correctly set to the home directory of hadoop in the enviroment variables
-EXTRA_INCLUDES+=-I$HADOOP_HOME/include
+EXTRA_INCLUDES+=-I${HADOOP_HOME}/include
 
 #Graph size limits
 CXXFLAGS += -DCOMPACT_GRAPH
@@ -38,6 +38,8 @@ CXXFLAGS += -msse4.2
 
 #System libraries
 SYSLIBS = -lboost_system -lboost_program_options -lboost_thread -lz -lrt -lhdfs3
+# SYSLIBS = -lboost_system -lboost_program_options -lboost_thread -lz -lrt -L/home/josers2/hadoop-2.9.0/lib/native/libhdfs.so
+#-lhdfs3
 #To use libhdfs, make sure JAVA_HOME is already set properly in the environment variables
 #Note the file path of the directory 'server' in your system, there is a difference between 64-bit and 32-bit jdk
 #Then, replace above SYSLIBS with next line
@@ -55,37 +57,37 @@ SYSLIBS = -lboost_system -lboost_program_options -lboost_thread -lz -lrt -lhdfs3
 
 
 
--include $(LIBS:.o=.d) $(PROGS:.o=.d) 
+-include $(LIBS:.o=.d) $(PROGS:.o=.d)
 
-$(OBJECT_DIR)/core.o:core/core.cpp 
+$(OBJECT_DIR)/core.o:core/core.cpp
 	$(CXX) $(CXXFLAGS) $(EXTRA_INCLUDES) -c -o $@ $<
 	$(CXX) -MM -MT '$(OBJECT_DIR)/core.o' $< > $(@:.o=.d)
 
-$(OBJECT_DIR)/utils.o:utils/utils.cpp 
+$(OBJECT_DIR)/utils.o:utils/utils.cpp
 	$(CXX) $(CXXFLAGS) $(EXTRA_INCLUDES) -c -o $@ $<
 	$(CXX) -MM -MT '$(OBJECT_DIR)/utils.o' $< > $(@:.o=.d)
 
-$(OBJECT_DIR)/driver.o:benchmarks/driver.cpp 
+$(OBJECT_DIR)/driver.o:benchmarks/driver.cpp
 	$(CXX) $(CXXFLAGS) $(EXTRA_INCLUDES) -c -o $@ $<
 	$(CXX) -MM -MT '$(OBJECT_DIR)/driver.o' $< > $(@:.o=.d)
 
-$(OBJECT_DIR)/sort_edges.o:utils/sort_edges.cpp 
+$(OBJECT_DIR)/sort_edges.o:utils/sort_edges.cpp
 	$(CXX) $(CXXFLAGS) $(EXTRA_INCLUDES) -c -o $@ $<
 	$(CXX) -MM -MT '$(OBJECT_DIR)/sort_edges.o' $< > $(@:.o=.d)
 
-$(OBJECT_DIR)/feeder.o:utils/feeder.cpp 
+$(OBJECT_DIR)/feeder.o:utils/feeder.cpp
 	$(CXX) $(CXXFLAGS) $(EXTRA_INCLUDES) -c -o $@ $<
 	$(CXX) -MM -MT '$(OBJECT_DIR)/feeder.o' $< > $(@:.o=.d)
 
-$(OBJECT_DIR)/mem_speed_sequential.o:utils/mem_speed_sequential.cpp 
+$(OBJECT_DIR)/mem_speed_sequential.o:utils/mem_speed_sequential.cpp
 	$(CXX) $(CXXFLAGS) $(EXTRA_INCLUDES) -c -o $@ $<
 	$(CXX) -MM -MT '$(OBJECT_DIR)/mem_speed_sequential.o' $< > $(@:.o=.d)
 
-$(OBJECT_DIR)/mem_speed_random.o:utils/mem_speed_random.cpp 
+$(OBJECT_DIR)/mem_speed_random.o:utils/mem_speed_random.cpp
 	$(CXX) $(CXXFLAGS) $(EXTRA_INCLUDES) -c -o $@ $<
 	$(CXX) -MM -MT '$(OBJECT_DIR)/mem_speed_random.o' $< > $(@:.o=.d)
 
-$(OBJECT_DIR)/zpipe.o:utils/zpipe.c 
+$(OBJECT_DIR)/zpipe.o:utils/zpipe.c
 	$(CXX) $(CXXFLAGS) $(EXTRA_INCLUDES) -c -o $@ $<
 	$(CXX) -MM -MT '$(OBJECT_DIR)/zpipe.o' $< > $(@:.o=.d)
 
@@ -124,7 +126,7 @@ install: all
 	cp generators/rmat $(bindir)
 	cp generators/erdos-renyi $(bindir)
 
-uninstall: 
+uninstall:
 	rm -f $(bindir)/benchmark_driver
 	rm -f $(bindir)/rmat
 	rm -f $(bindir)/erdos-renyi

@@ -26,7 +26,7 @@ namespace x_lib{
         std::map<unsigned int, hdfsFile> fileRDmap;
 	//File description for write operation
         std::map<unsigned int, hdfsFile> fileWRmap;
-	//Mapping from file ID to file path      
+	//Mapping from file ID to file path
 	std::map<unsigned int, std::string> pathmap;
 	//Record whether the file needs to be reopened for write operation
         std::map<unsigned int, bool> needRefreshWR;
@@ -39,11 +39,11 @@ namespace x_lib{
             fs = hdfsBuilderConnect(builder);
             filecnt= 0;
         }
-	
+
 	//Overload copy constructor and equal operator for singleton pattern
-        hdfs_io(hdfs_io const&); 
+        hdfs_io(hdfs_io const&);
 	void operator=(hdfs_io const&);
-        
+
 	public:
             static const int RDONLY = 1;
             static const int WRONLY = 2;
@@ -65,7 +65,7 @@ namespace x_lib{
              * supported flags are hdfs_io::RDONLY, hdfs_io::WRONLY, hdfs_io::APPEND and hdfs_io::SYNC,
              * Other flags are generally ignored other than (O_RDWR || (O_EXCL & O_CREAT)) which return NULL and set errno equal ENOTSU
             */
-            int open(const char* filename, int flags){            
+            int open(const char* filename, int flags){
                 if(flags == RDONLY){
                     hdfsFile filehandle = hdfsOpenFile(fs, filename, O_RDONLY, 0/*not used*/, 0/*use default value*/, 0/*use default value*/);
                     mtx.lock();
@@ -106,7 +106,7 @@ namespace x_lib{
                 }
                 return filecnt;
             }
-	    
+
 	    //Close the file description for write operation
             void turnOnRefreshWR(int fd){
                 if(!needRefreshWR[fd]){
@@ -115,12 +115,12 @@ namespace x_lib{
 		    if(retval){
 			std::cout << "flush failed..." << std::endl;
 	 	    }*/
-                    retval = hdfsCloseFile(fs, fileWRmap[fd]);
+                    int retval = hdfsCloseFile(fs, fileWRmap[fd]);
 		    needRefreshWR[fd] = true;
                     mtx.unlock();
                 }
             }
-	    
+
   	    //Reopen the file desription for read operation
             void refreshReadHandle(int fd){
                 mtx.lock();
@@ -142,12 +142,12 @@ namespace x_lib{
                     mtx.unlock();
                 }
             }
-	    
+
 	    //Flush to HDFS, not called at present
             void flush(int fd){
                 hdfsFlush(fs, fileWRmap[fd]);
             }
-	    
+
 	    //Close all the file descriptions relevant to file ID fd
             void close(int fd){
                 mtx.lock();
@@ -188,9 +188,9 @@ namespace x_lib{
                 }
                 mtx.unlock();
             }
-	     
+
 	    //Write to HDFS
-            int write(int fd, 
+            int write(int fd,
                       unsigned char *output,
                       unsigned long bytes_to_write){
                 hdfsFile& filehandle = fileWRmap[fd];
@@ -202,7 +202,7 @@ namespace x_lib{
             }
 
 	    //Read from HDFS
-            int read(int fd, 
+            int read(int fd,
                      unsigned char *input,
                      unsigned long bytes_to_read){
                 mtx.lock();
@@ -225,7 +225,7 @@ namespace x_lib{
                 }
                 return seekretval;
             }
-	    
+
 	    //Truncate the whole file
             int ftruncate(int fd,
                          int pos){
